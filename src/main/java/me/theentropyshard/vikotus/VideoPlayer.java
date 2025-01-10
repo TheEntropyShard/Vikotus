@@ -1,6 +1,6 @@
 /*
  * Vikotus - https://github.com/TheEntropyShard/Vikotus
- * Copyright (C) 2024 TheEntropyShard
+ * Copyright (C) 2024-2025 TheEntropyShard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,22 @@
 
 package me.theentropyshard.vikotus;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.theentropyshard.vikotus.api.RecommendedVideo;
 import me.theentropyshard.vikotus.api.VideoItem;
+import me.theentropyshard.vikotus.gui.player.PlayerView;
 import okhttp3.*;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -81,18 +85,25 @@ public class VideoPlayer {
             return;
         }
 
-        EmbeddedMediaPlayerComponent playerComponent = new EmbeddedMediaPlayerComponent();
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        FlatIntelliJLaf.setup();
+
+        JFrame frame = new JFrame("Vikotus - " + videoItem.getTitle());
+        PlayerView playerView = new PlayerView(videoItem.getTitle(), frame);
+
+        playerView.setBorder(new EmptyBorder(5, 5, 5, 5));
+
 
         JPanel root = new JPanel(new BorderLayout());
         root.setPreferredSize(new Dimension(960, 540));
 
-        root.add(playerComponent, BorderLayout.CENTER);
+        root.add(playerView, BorderLayout.CENTER);
 
-        JFrame frame = new JFrame("Vikotus - " + videoItem.getTitle());
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                playerComponent.release();
+                playerView.getC().release();
                 System.exit(0);
             }
         });
@@ -101,33 +112,8 @@ public class VideoPlayer {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        playerComponent.mediaPlayer().media().play(videoItem.getFiles().getHls(), ":adaptive-logic=highest");
-
-        int[] width = {0};
-        int[] totalWidth = new int[]{960};
-
-        playerComponent.mediaPlayer().overlay().set(new Window(frame) {
-            {
-                this.setBackground(new Color(0, 0, 0, 0));
-                this.setLayout(new BorderLayout());
-            }
-
-            @Override
-            public void paint(Graphics g) {
-                super.paint(g);
-
-                g.setColor(Color.GREEN);
-                g.fillRect(10, this.getHeight() - 10, width[0], 20);
-            }
-        });
-        playerComponent.mediaPlayer().overlay().enable(true);
-
-        playerComponent.mediaPlayer().events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
-            @Override
-            public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
-                width[0] = (int) (totalWidth[0] * newPosition);
-            }
-        });
+        playerView.toggleOverlay(true);
+        playerView.getC().mediaPlayer().media().play(videoItem.getFiles().getHls(), ":adaptive-logic=highest");
     }
 
     private static String getAnonymousToken(OkHttpClient httpClient, Gson gson) throws IOException {

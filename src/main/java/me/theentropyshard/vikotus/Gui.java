@@ -1,6 +1,6 @@
 /*
  * Vikotus - https://github.com/TheEntropyShard/Vikotus
- * Copyright (C) 2024 TheEntropyShard
+ * Copyright (C) 2024-2025 TheEntropyShard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package me.theentropyshard.vikotus;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.ui.FlatButtonBorder;
+import me.theentropyshard.vikotus.gui.Card;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,17 +34,20 @@ public class Gui {
         JFrame.setDefaultLookAndFeelDecorated(true);
         FlatIntelliJLaf.setup();
 
-        JPanel root = new JPanel();
-        root.setBackground(Color.LIGHT_GRAY);
+        /*JPanel root = new JPanel();*/
+        Card root = new Card();
+        root.setPreferredSize(new Dimension(960, 540));
+       /* root.setBackground(Color.LIGHT_GRAY);
         root.setPreferredSize(new Dimension(960, 540));
         MyTextField myTextField = new MyTextField();
         myTextField.setPreferredSize(new Dimension(500, 40));
         root.add(myTextField);
         MyButton myButton = new MyButton("Hello");
         myButton.setPreferredSize(new Dimension(myButton.getPreferredSize().width, 40));
-        root.add(myButton);
+        root.add(myButton);*/
 
         JFrame frame = new JFrame("Vikotus");
+        frame.getContentPane().setBackground(Color.BLACK);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -61,7 +65,7 @@ public class Gui {
         public MyTextField() {
             this.putClientProperty("JComponent.roundRect", true);
             //this.putClientProperty("TextComponent.arc", 999);
-            this.setBackground(Color.decode("#EDF2FA"));
+            this.setBackground(Color.decode("#DEE6ED"));
             //this.setBorder(null);
             this.putClientProperty("JTextField.padding", new Insets(0, 16, 0, 16));
         }
@@ -72,7 +76,7 @@ public class Gui {
             super(text);
 
             this.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
-            this.setBackground(Color.decode("#EDF2FA"));
+            this.setBackground(Color.decode("#DEE6ED"));
             this.setBorder(new FlatButtonBorder() {
                 @Override
                 public Insets getBorderInsets(Component c) {
